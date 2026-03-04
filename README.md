@@ -10,7 +10,7 @@
 
 **An AI-powered RAG system that automatically answers enterprise questionnaires using your internal reference documents — with citations, confidence scores, and version history.**
 
-[Live Demo](https://leadflowai-d391.onrender.com) · [GitHub Repo](https://github.com/Kowshik-bh18/leadflow-rag) · [Setup Guide](SETUP_GUIDE.md)
+[Live Demo](https://leadflowai-d391.onrender.com) · [GitHub Repo](https://github.com/Kowshik-bh18/LeadFlowAI) · [Setup Guide](SETUP_GUIDE.md)
 
 </div>
 
