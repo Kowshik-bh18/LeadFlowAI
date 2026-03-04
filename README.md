@@ -10,7 +10,7 @@
 
 **An AI-powered RAG system that automatically answers enterprise questionnaires using your internal reference documents — with citations, confidence scores, and version history.**
 
-[Live Demo](#) · [GitHub Repo](#) · [Setup Guide](SETUP_GUIDE.md)
+[Live Demo](https://leadflowai-d391.onrender.com) · [GitHub Repo](https://github.com/Kowshik-bh18/leadflow-rag) · [Setup Guide](SETUP_GUIDE.md)
 
 </div>
 
@@ -91,6 +91,7 @@ _Upload questionnaire file (PDF/CSV/TXT) or paste questions manually_
 ### 9. Run History
 
 ![Run History](screenshots/out8.png)
+![Run History](screenshots/hist.png)
 _Version history showing each generation run with stats and duration_
 
 ---
