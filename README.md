@@ -62,27 +62,33 @@ _User registration with first name, last name, work email, company, and password
 ![Google OAuth](screenshots/out3.png)
 _One-click Google sign-in — redirects to Google account chooser_
 
-### 4. Questionnaires Dashboard
+### 4. Profile Page
+
+![Profile](screenshots/profile.png)
+
+_Manage user account details including first name, last name, email, and organization. Also displays API access and refresh tokens for programmatic access to the platform._
+
+### 5. Questionnaires Dashboard
 
 ![Dashboard](screenshots/out4.png)
 _Overview of all questionnaires with coverage rate, answered count, and not-found count_
 
-### 5. Reference Documents
+### 6. Reference Documents
 
 ![Reference Docs](screenshots/out5.png)
 _Manage your knowledge base — upload and index reference documents_
 
-### 6. Upload Reference Document
+### 7. Upload Reference Document
 
 ![Upload Ref Doc](screenshots/out6.png)
 _Upload PDF/DOCX/TXT or paste text directly — auto-indexed with pgvector embeddings_
 
-### 7. New Questionnaire
+### 8. New Questionnaire
 
 ![New Questionnaire](screenshots/out7.png)
 _Upload questionnaire file (PDF/CSV/TXT) or paste questions manually_
 
-### 8. Run History
+### 9. Run History
 
 ![Run History](screenshots/out8.png)
 _Version history showing each generation run with stats and duration_
