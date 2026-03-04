@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: leadflow-rag
+    env: python
+    plan: free
+    buildCommand: >
+      pip install -r requirements.txt &&
+      python manage.py migrate &&
+      python manage.py collectstatic --noinput
+    startCommand: gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    envVars:
+      - key: DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"
+      - key: DATABASE_URL
+        sync: false          # paste your Supabase Session Pooler URI
+      - key: GEMINI_API_KEY
+        sync: false          # paste your Gemini API key
+      - key: GEMINI_CHAT_MODEL
+        value: "gemini-1.5-flash"

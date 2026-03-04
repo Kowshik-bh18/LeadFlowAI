@@ -1,0 +1,32 @@
+LEADFLOW AI – ACCESS CONTROL POLICY
+Version: 2.2 | Effective: January 2024 | Owner: CISO & Engineering
+
+1. PURPOSE
+This policy defines how access to LeadFlow AI systems, infrastructure, and customer data is granted, managed, reviewed, and revoked.
+
+2. PRINCIPLE OF LEAST PRIVILEGE
+All access is granted on a need-to-know, least-privilege basis. Employees receive the minimum permissions required to perform their job functions. Broad administrative access requires formal approval from the CISO. Access is scoped to specific resources and environments (dev, staging, production are strictly separated).
+
+3. USER ACCESS MANAGEMENT
+New employee access is provisioned through an automated onboarding workflow triggered by HR. Access to production systems requires CISO approval and is restricted to senior engineers and operations staff. All production access is logged and audited weekly.
+
+4. ROLE-BASED ACCESS CONTROL (RBAC)
+LeadFlow AI implements RBAC at both the platform level (customer-facing) and infrastructure level. Platform roles: Owner, Admin, Editor, Viewer, Billing. Infrastructure roles: ReadOnly, Developer, SRE, Admin. Role assignments are reviewed quarterly by engineering managers.
+
+5. PRIVILEGED ACCESS MANAGEMENT
+Database administrator access is managed via AWS IAM roles with temporary credentials (max 4-hour sessions). No standing privileged access to production databases. Break-glass accounts for emergency access require dual approval and are fully logged. Privileged sessions are recorded via AWS Systems Manager Session Manager.
+
+6. MULTI-FACTOR AUTHENTICATION
+MFA is enforced for all accounts: customer accounts, employee accounts, AWS console, and third-party SaaS tools. TOTP (Google Authenticator, Authy) and hardware keys (YubiKey) are supported. SMS-based MFA is not permitted due to SIM-swapping risks.
+
+7. ACCESS REVIEWS
+Quarterly access reviews are conducted by team leads and the security team. Dormant accounts (>60 days inactive) are automatically suspended. Employee access is immediately revoked upon offboarding, within 1 hour of HR notification.
+
+8. THIRD-PARTY ACCESS
+Vendors with system access require signed DPA (Data Processing Agreement) and NDA. Third-party access is granted via time-limited API keys or scoped IAM roles. All third-party access is logged and reviewed monthly.
+
+9. CUSTOMER ACCESS CONTROL
+Customers manage their own user accounts via the admin dashboard. SSO/SAML integration allows customers to enforce their own identity provider policies. Customer admins can enforce MFA, IP allowlisting, and session timeout policies for their organization.
+
+10. LOGGING
+All access events to production systems are logged in CloudTrail and Datadog. Logs are immutable and retained for 365 days. Anomalous access patterns trigger automated alerts.

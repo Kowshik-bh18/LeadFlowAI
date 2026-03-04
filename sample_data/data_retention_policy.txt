@@ -1,0 +1,26 @@
+LEADFLOW AI – DATA RETENTION POLICY
+Version: 1.8 | Effective: March 2024 | Owner: Legal & Compliance
+
+1. PURPOSE
+This policy governs how long LeadFlow AI retains customer data and internal operational data, and the procedures for secure deletion upon contract termination or customer request.
+
+2. CUSTOMER CRM DATA
+Active customer data (leads, contacts, accounts, activities) is retained for the duration of the subscription agreement. Upon contract termination, customer data is held for 90 days in a read-only archive state to allow data export. After 90 days, all customer data is permanently and irreversibly deleted using DoD 5220.22-M overwrite standards for disk-based storage and cryptographic erasure for cloud-hosted encrypted data. Customers may request early deletion of all data within 30 days of submitting a written request.
+
+3. AUDIT LOGS
+System audit logs (user actions, API calls, admin operations) are retained for 365 days to support security investigations and compliance requirements. Logs are stored in append-only, tamper-evident storage.
+
+4. BACKUP DATA
+Database backups are retained for 35 days. After 35 days, backups are automatically purged by AWS RDS automated backup policies. Backups of terminated customer accounts follow the same 90-day active retention window, after which backups are permanently deleted.
+
+5. EMPLOYEE AND HR DATA
+Employee records are retained for 7 years post-employment in accordance with applicable labor laws. Background check data is deleted within 30 days of onboarding completion.
+
+6. PERSONAL DATA (GDPR / CCPA)
+LeadFlow AI processes personal data as both a data controller (employee data) and data processor (customer CRM data). Customers retain full ownership and control of personal data they store in the platform. Upon receiving a Data Subject Access Request (DSAR) or Right to Erasure request, LeadFlow AI will action the request within 72 hours for erasure and 30 days for data portability. PII is not used for model training without explicit opt-in consent from enterprise customers.
+
+7. FINANCIAL RECORDS
+Transaction records, invoices, and billing data are retained for 7 years as required by tax regulations.
+
+8. DELETION CERTIFICATION
+Upon request, LeadFlow AI provides a Certificate of Data Destruction signed by the VP of Engineering confirming permanent deletion of all customer data.

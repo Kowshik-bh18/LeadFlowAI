@@ -1,0 +1,26 @@
+LEADFLOW AI – INFRASTRUCTURE OVERVIEW
+Version: 2.4 | Last Updated: February 2024 | Owner: VP Engineering
+
+1. CLOUD PROVIDER AND REGIONS
+LeadFlow AI is hosted entirely on Amazon Web Services (AWS). Primary region: us-east-1 (Northern Virginia). Secondary/DR region: eu-west-1 (Ireland) for European customers. Data residency can be configured per customer contract.
+
+2. MULTI-TENANCY AND ISOLATION
+LeadFlow AI employs a logical multi-tenancy model. Each customer's data is isolated at the database level using PostgreSQL row-level security (RLS) and schema-level separation. Customer IDs (UUIDs) are used as partition keys throughout all data stores. Cross-tenant data access is prevented at the application and infrastructure layer. Network-level isolation is provided via VPC security groups.
+
+3. COMPUTE
+Application servers run on Amazon ECS (Fargate) using Docker containers. Auto-scaling is configured based on CPU and request-per-second metrics. Zero-downtime deployments are achieved via blue-green deployment strategy. No customer data is persisted on compute instances.
+
+4. DATABASE
+Primary database: Amazon Aurora PostgreSQL 15.2 (Multi-AZ). Read replicas are used for reporting and analytics workloads. Automated backups are enabled with a 35-day retention period. Point-in-time recovery (PITR) is available for all customer data.
+
+5. OBJECT STORAGE
+Customer-uploaded files are stored in Amazon S3 with server-side encryption (SSE-KMS). Pre-signed URLs with 15-minute expiry are used for file access. S3 bucket policies block all public access. CloudFront CDN is used for static asset delivery.
+
+6. LOGGING AND MONITORING
+Application logs are shipped to AWS CloudWatch and Datadog. Infrastructure metrics are monitored via Datadog with PagerDuty alerting. Access logs (API, database, console) are retained for 365 days. Security events are streamed to AWS Security Hub and AWS GuardDuty.
+
+7. BACKUP AND DISASTER RECOVERY
+RTO (Recovery Time Objective): 4 hours for critical systems. RPO (Recovery Point Objective): 1 hour for customer data. Daily full database snapshots are stored in S3 with cross-region replication. DR drills are conducted semi-annually.
+
+8. NETWORK SECURITY
+All traffic is routed through AWS Application Load Balancer with WAF (Web Application Firewall). DDoS protection via AWS Shield Standard is enabled by default. Shield Advanced is available for enterprise customers. VPN access required for all administrative operations.

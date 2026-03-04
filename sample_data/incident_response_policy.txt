@@ -1,0 +1,29 @@
+LEADFLOW AI – INCIDENT RESPONSE POLICY
+Version: 2.0 | Effective: January 2024 | Owner: CISO
+
+1. PURPOSE
+This policy defines how LeadFlow AI detects, responds to, and recovers from security incidents and data breaches affecting customer and company data.
+
+2. INCIDENT CLASSIFICATION
+P0 (Critical): Active data breach, ransomware, or system-wide outage. SLA: Response within 15 minutes, customer notification within 1 hour.
+P1 (High): Confirmed unauthorized access attempt with potential data exposure. SLA: Response within 1 hour, customer notification within 4 hours.
+P2 (Medium): Failed intrusion attempt, suspicious activity detected. SLA: Response within 4 hours.
+P3 (Low): Policy violation, minor anomaly. SLA: Response within 24 hours.
+
+3. RESPONSE TEAM
+The Incident Response Team (IRT) is led by the CISO and includes: VP Engineering, Legal Counsel, Head of Customer Success, and PR Lead. The IRT is on-call 24/7 via PagerDuty. Escalation path: On-call engineer → Engineering Manager → VP Engineering → CISO.
+
+4. DETECTION AND ALERTING
+Security events are detected via AWS GuardDuty, CloudTrail anomaly detection, Datadog SIEM, and WAF rule triggers. PagerDuty alerts are sent to on-call staff within 5 minutes of alert trigger.
+
+5. CONTAINMENT PROCEDURES
+Upon P0/P1 detection: Affected systems are isolated immediately via security group rule changes. API access is revoked for suspected compromised accounts. Customer data access is suspended for the affected tenant pending investigation.
+
+6. CUSTOMER NOTIFICATION
+For confirmed data breaches affecting customer data, LeadFlow AI will notify affected customers within 72 hours as required by GDPR Article 33. Notifications include: nature of breach, data categories affected, likely consequences, and mitigation measures. A dedicated incident status page is maintained at status.leadflow.ai.
+
+7. POST-INCIDENT REVIEW
+All P0 and P1 incidents require a blameless post-mortem within 5 business days. Post-mortems are shared with affected enterprise customers upon request. Root cause analysis (RCA) documents are retained for 3 years.
+
+8. BUSINESS CONTINUITY
+LeadFlow AI maintains a Business Continuity Plan (BCP) reviewed annually. Failover to DR region (eu-west-1) can be initiated within 30 minutes for P0 outages.
