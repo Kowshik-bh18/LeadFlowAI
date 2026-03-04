@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}Run History{% endblock %}
+{% block page_title %}Run History{% endblock %}
+{% block nav_q %}active{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center gap-2 mb-4">
+    <a href="{% url 'questionnaires:detail' questionnaire.pk %}" class="text-muted text-decoration-none small">
+        <i class="bi bi-arrow-left me-1"></i> Back to {{ questionnaire.title }}
+    </a>
+</div>
+
+<h5 class="fw-bold mb-4">Version History – {{ questionnaire.title }}</h5>
+
+{% if runs %}
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Run</th>
+                    <th>Status</th>
+                    <th>Questions</th>
+                    <th>Answered</th>
+                    <th>Not Found</th>
+                    <th>Duration</th>
+                    <th>Started</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for run in runs %}
+                <tr>
+                    <td><span class="fw-semibold">#{{ run.run_number }}</span></td>
+                    <td>
+                        <span class="badge {% if run.status == 'completed' %}bg-success{% elif run.status == 'running' %}bg-warning text-dark{% elif run.status == 'failed' %}bg-danger{% else %}bg-secondary{% endif %}">
+                            {{ run.get_status_display }}
+                        </span>
+                    </td>
+                    <td>{{ run.total_questions }}</td>
+                    <td class="text-success fw-semibold">{{ run.answered_count }}</td>
+                    <td class="text-danger">{{ run.not_found_count }}</td>
+                    <td>{% if run.duration_seconds %}{{ run.duration_seconds }}s{% else %}–{% endif %}</td>
+                    <td class="text-muted small">{{ run.started_at|date:"M d, Y H:i" }}</td>
+                </tr>
+                {% if run.error_message %}
+                <tr>
+                    <td colspan="7">
+                        <div class="alert alert-danger py-2 px-3 mb-0 small">
+                            <i class="bi bi-exclamation-triangle me-1"></i>{{ run.error_message }}
+                        </div>
+                    </td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="text-center py-5 text-muted">
+    <i class="bi bi-clock-history" style="font-size:2rem;"></i>
+    <p class="mt-2">No runs yet. Generate answers to create the first run.</p>
+</div>
+{% endif %}
+{% endblock %}

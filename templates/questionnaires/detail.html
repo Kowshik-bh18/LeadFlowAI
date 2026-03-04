@@ -1,0 +1,248 @@
+{% extends 'base.html' %}
+{% block title %}{{ questionnaire.title }}{% endblock %}
+{% block page_title %}{{ questionnaire.title }}{% endblock %}
+{% block nav_q %}active{% endblock %}
+
+{% block content %}
+
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
+    <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <a href="{% url 'questionnaires:list' %}" class="text-muted text-decoration-none small">
+                <i class="bi bi-arrow-left me-1"></i> Questionnaires
+            </a>
+        </div>
+        <h4 class="fw-bold mb-1">{{ questionnaire.title }}</h4>
+        {% if questionnaire.description %}
+        <p class="text-muted mb-0 small">{{ questionnaire.description }}</p>
+        {% endif %}
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+        <form method="post" action="{% url 'questionnaires:generate' questionnaire.pk %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-brand"
+                {% if questionnaire.status == 'processing' %}disabled{% endif %}>
+                {% if questionnaire.status == 'processing' %}
+                    <span class="spinner-border spinner-border-sm me-1"></span> Processing…
+                {% else %}
+                    <i class="bi bi-lightning-fill me-1"></i> Generate Answers
+                {% endif %}
+            </button>
+        </form>
+        <div class="dropdown">
+            <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                <i class="bi bi-download me-1"></i> Export
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'exports:pdf' questionnaire.pk %}">
+                    <i class="bi bi-file-pdf me-2 text-danger"></i> Export as PDF
+                </a></li>
+                <li><a class="dropdown-item" href="{% url 'exports:docx' questionnaire.pk %}">
+                    <i class="bi bi-file-word me-2 text-primary"></i> Export as DOCX
+                </a></li>
+            </ul>
+        </div>
+        <a href="{% url 'questionnaires:run_history' questionnaire.pk %}" class="btn btn-outline-secondary">
+            <i class="bi bi-clock-history me-1"></i> History
+        </a>
+        <form method="post" action="{% url 'questionnaires:delete' questionnaire.pk %}"
+              onsubmit="return confirm('Delete this questionnaire?')">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-danger">
+                <i class="bi bi-trash"></i>
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Coverage Summary -->
+{% if questionnaire.total_questions %}
+<div class="card mb-4">
+    <div class="card-body py-3 px-4">
+        <div class="row align-items-center">
+            <div class="col-md-3">
+                <div class="coverage-stat">
+                    <div class="stat-value">{{ questionnaire.total_questions }}</div>
+                    <div class="stat-label">Total Questions</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="coverage-stat">
+                    <div class="stat-value text-success">{{ questionnaire.answered_questions }}</div>
+                    <div class="stat-label">Answered w/ Citation</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="coverage-stat">
+                    <div class="stat-value text-danger">{{ questionnaire.not_found_count }}</div>
+                    <div class="stat-label">Not Found</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="coverage-stat">
+                    <div class="stat-value text-primary">{{ questionnaire.coverage_pct }}%</div>
+                    <div class="stat-label">Coverage Rate</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Regenerate selected -->
+<form method="post" action="{% url 'questionnaires:generate' questionnaire.pk %}" id="regenForm">
+    {% csrf_token %}
+
+    <!-- Questions list -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="fw-bold mb-0">Questions &amp; Answers</h6>
+        <div class="d-flex gap-2 align-items-center">
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleSelectAll()">
+                <i class="bi bi-check-all me-1"></i> Select All
+            </button>
+            <button type="submit" class="btn btn-sm btn-warning" id="regenSelected" style="display:none;">
+                <i class="bi bi-arrow-clockwise me-1"></i> Regenerate Selected
+            </button>
+        </div>
+    </div>
+
+    {% for question, answer in questions_with_answers %}
+    <div class="question-card" id="qcard-{{ question.pk }}">
+        <div class="d-flex align-items-start gap-3">
+            <input type="checkbox" name="question_ids" value="{{ question.pk }}"
+                   class="form-check-input q-checkbox mt-1" onchange="updateRegenBtn()">
+            <div class="flex-grow-1">
+                <!-- Question -->
+                <div class="d-flex align-items-start gap-2 mb-3">
+                    <span class="question-number">{{ question.order }}</span>
+                    <p class="mb-0 fw-semibold" style="line-height:1.5;">{{ question.text }}</p>
+                </div>
+
+                {% if answer %}
+                <!-- Answer -->
+                <div class="answer-section">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="badge badge-confidence-{{ answer.confidence_label }} rounded-pill px-2 py-1" style="font-size:.72rem;">
+                            {% if answer.is_not_found %}
+                                <i class="bi bi-x-circle me-1"></i>Not Found
+                            {% elif answer.confidence_label == 'high' %}
+                                <i class="bi bi-check-circle me-1"></i>High Confidence
+                            {% elif answer.confidence_label == 'medium' %}
+                                <i class="bi bi-dash-circle me-1"></i>Medium Confidence
+                            {% else %}
+                                <i class="bi bi-exclamation-circle me-1"></i>Low Confidence
+                            {% endif %}
+                        </span>
+                        {% if not answer.is_not_found %}
+                        <div class="conf-bar flex-grow-1" style="max-width:80px;">
+                            <div class="conf-bar-fill {{ answer.confidence_label }}"
+                                 style="width:{{ answer.confidence_score|floatformat:0 }}00%"></div>
+                        </div>
+                        <span class="text-muted small">{{ answer.confidence_score|floatformat:2 }}</span>
+                        {% endif %}
+                        {% if answer.is_edited %}
+                        <span class="badge bg-light text-muted border small">
+                            <i class="bi bi-pencil me-1"></i>Edited
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Answer text (inline editable) -->
+                    <div id="view-{{ answer.pk }}" class="answer-text mb-2 {% if answer.is_not_found %}not-found-text{% endif %}">
+                        {{ answer.answer_text }}
+                    </div>
+
+                    <!-- Edit form (hidden by default) -->
+                    <div id="edit-{{ answer.pk }}" style="display:none;">
+                        <form method="post" action="{% url 'questionnaires:edit_answer' answer.pk %}">
+                            {% csrf_token %}
+                            <textarea name="answer_text" class="form-control mb-2" rows="4">{{ answer.answer_text }}</textarea>
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-sm btn-success">Save</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary"
+                                        onclick="cancelEdit('{{ answer.pk }}')">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Citations -->
+                    {% if answer.citations %}
+                    <div class="mt-2">
+                        <div class="text-muted small mb-1"><i class="bi bi-bookmark me-1"></i>Sources</div>
+                        {% for citation in answer.citations %}
+                        <span class="badge bg-light text-muted border me-1 mb-1" style="font-size:.72rem;">
+                            <i class="bi bi-file-text me-1"></i>{{ citation.document_title }}
+                            <span class="opacity-75">({{ citation.score }})</span>
+                        </span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Evidence snippet -->
+                    {% if answer.evidence_snippets %}
+                    <details class="mt-2">
+                        <summary class="text-muted small" style="cursor:pointer;">
+                            <i class="bi bi-eye me-1"></i>Evidence snippets ({{ answer.evidence_snippets|length }})
+                        </summary>
+                        {% for snippet in answer.evidence_snippets %}
+                        <div class="evidence-snippet mt-1">{{ snippet }}…</div>
+                        {% endfor %}
+                    </details>
+                    {% endif %}
+
+                    <!-- Edit button -->
+                    <button type="button" class="btn btn-sm btn-outline-secondary mt-2"
+                            onclick="startEdit('{{ answer.pk }}')">
+                        <i class="bi bi-pencil me-1"></i>Edit Answer
+                    </button>
+                </div>
+                {% else %}
+                <div class="text-muted small">
+                    <i class="bi bi-hourglass me-1"></i> Not yet answered. Click "Generate Answers" above.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</form>
+
+{% if not questions_with_answers %}
+<div class="text-center py-5 text-muted">
+    <i class="bi bi-file-earmark-x" style="font-size:2rem;"></i>
+    <p class="mt-2">No questions in this questionnaire.</p>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function startEdit(id) {
+    document.getElementById('view-' + id).style.display = 'none';
+    document.getElementById('edit-' + id).style.display = 'block';
+}
+function cancelEdit(id) {
+    document.getElementById('view-' + id).style.display = 'block';
+    document.getElementById('edit-' + id).style.display = 'none';
+}
+
+let allSelected = false;
+function toggleSelectAll() {
+    allSelected = !allSelected;
+    document.querySelectorAll('.q-checkbox').forEach(cb => cb.checked = allSelected);
+    updateRegenBtn();
+}
+
+function updateRegenBtn() {
+    const anyChecked = [...document.querySelectorAll('.q-checkbox')].some(cb => cb.checked);
+    document.getElementById('regenSelected').style.display = anyChecked ? 'inline-block' : 'none';
+}
+
+// Auto-refresh if processing
+{% if questionnaire.status == 'processing' %}
+setTimeout(() => location.reload(), 5000);
+{% endif %}
+</script>
+{% endblock %}

@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% block title %}New Questionnaire{% endblock %}
+{% block page_title %}New Questionnaire{% endblock %}
+{% block nav_q %}active{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="d-flex align-items-center gap-2 mb-4">
+            <a href="{% url 'questionnaires:list' %}" class="text-muted text-decoration-none small">
+                <i class="bi bi-arrow-left me-1"></i> Back
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-upload text-primary me-2"></i> Upload Questionnaire
+            </div>
+            <div class="card-body p-4">
+                <form method="post" enctype="multipart/form-data" id="uploadForm">
+                    {% csrf_token %}
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Questionnaire Title <span class="text-danger">*</span></label>
+                        <input type="text" name="title" class="form-control" placeholder="e.g. Acme Corp Security Assessment 2024" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Description <span class="text-muted fw-normal small">(optional)</span></label>
+                        <textarea name="description" class="form-control" rows="2"
+                                  placeholder="Brief description of this questionnaire"></textarea>
+                    </div>
+
+                    <!-- Tab: Upload vs Manual -->
+                    <div class="mb-4">
+                        <ul class="nav nav-tabs" id="inputTabs">
+                            <li class="nav-item">
+                                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#fileTab" type="button">
+                                    <i class="bi bi-file-earmark-arrow-up me-1"></i> Upload File
+                                </button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#manualTab" type="button">
+                                    <i class="bi bi-pencil me-1"></i> Paste Questions
+                                </button>
+                            </li>
+                        </ul>
+                        <div class="tab-content border border-top-0 rounded-bottom p-4">
+                            <div class="tab-pane fade show active" id="fileTab">
+                                <div class="border-2 border-dashed rounded-3 p-5 text-center" id="dropZone"
+                                     style="border-color:var(--border);background:var(--surface-2);">
+                                    <i class="bi bi-cloud-upload" style="font-size:2rem;color:var(--text-muted);"></i>
+                                    <p class="mt-2 mb-1 fw-semibold">Drop your file here or click to browse</p>
+                                    <p class="text-muted small mb-3">Supports PDF, CSV, TXT</p>
+                                    <input type="file" name="file" id="fileInput" accept=".pdf,.csv,.txt"
+                                           class="d-none" onchange="showFileName(this)">
+                                    <button type="button" class="btn btn-outline-primary btn-sm"
+                                            onclick="document.getElementById('fileInput').click()">
+                                        Choose File
+                                    </button>
+                                    <div id="fileName" class="mt-2 text-muted small"></div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="manualTab">
+                                <label class="form-label fw-semibold">Enter Questions</label>
+                                <p class="text-muted small mb-2">One question per line.</p>
+                                <textarea name="manual_questions" class="form-control font-monospace"
+                                          rows="10" placeholder="Does the system support MFA?
+What encryption standards are used for data at rest?
+How are access logs retained?
+..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-brand px-4">
+                            <i class="bi bi-arrow-right me-1"></i> Create Questionnaire
+                        </button>
+                        <a href="{% url 'questionnaires:list' %}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Sample template hint -->
+        <div class="card mt-3 border-0" style="background:var(--brand-light);">
+            <div class="card-body py-3 px-4">
+                <p class="mb-0 small">
+                    <i class="bi bi-info-circle text-primary me-1"></i>
+                    <strong>Tip:</strong> CSV files should have one question per row.
+                    PDF files are parsed line-by-line for lines containing a question mark.
+                    You can also use the sample questionnaire from <code>sample_data/</code>.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function showFileName(input) {
+    const file = input.files[0];
+    if (file) {
+        document.getElementById('fileName').textContent = '✓ ' + file.name;
+    }
+}
+
+const dropZone = document.getElementById('dropZone');
+if (dropZone) {
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.borderColor='var(--brand)'; });
+    dropZone.addEventListener('dragleave', () => { dropZone.style.borderColor='var(--border)'; });
+    dropZone.addEventListener('drop', e => {
+        e.preventDefault();
+        dropZone.style.borderColor = 'var(--border)';
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            const input = document.getElementById('fileInput');
+            const dt = new DataTransfer();
+            dt.items.add(files[0]);
+            input.files = dt.files;
+            showFileName(input);
+        }
+    });
+}
+</script>
+{% endblock %}
