@@ -34,15 +34,6 @@ A full-stack web application where users can:
 4. **Generate answers** — AI retrieves relevant chunks from reference docs and generates grounded answers with citations
 5. **Review and edit answers** — inline editing before export
 6. **Export** — download as PDF or DOCX preserving original structure
-
-### All 5 Nice-to-Have Features Implemented
-
-- ✅ Confidence Score per answer
-- ✅ Evidence Snippets (expandable)
-- ✅ Partial Regeneration (checkbox select)
-- ✅ Version History (full run tracking)
-- ✅ Coverage Summary (top of questionnaire)
-
 ---
 
 ## 🖥️ Application Screenshots
@@ -200,36 +191,7 @@ For each Question:
 
 ---
 
-## ✅ Requirements Checklist
 
-### Phase 1 — Core Workflow
-
-- [x] User signup and login (email + Google OAuth)
-- [x] Upload questionnaire (PDF, CSV, TXT)
-- [x] Upload reference documents (PDF, DOCX, TXT)
-- [x] Generate answers with one click
-- [x] Parse questionnaire into individual questions
-- [x] Retrieve relevant content via RAG
-- [x] Generate grounded answer per question
-- [x] At least one citation per answer
-- [x] "Not found in references." when below threshold
-- [x] Structured web view: Question + Answer + Citations
-
-### Phase 2 — Review & Export
-
-- [x] Inline answer editing
-- [x] Export as PDF
-- [x] Export as DOCX
-- [x] Original question order preserved
-- [x] Citations included in exports
-
-### Nice to Have (all 5 done, only 2 required)
-
-- [x] Confidence Score
-- [x] Evidence Snippets
-- [x] Partial Regeneration
-- [x] Version History
-- [x] Coverage Summary
 
 ---
 
